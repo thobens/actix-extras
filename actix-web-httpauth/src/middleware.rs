@@ -118,16 +118,15 @@ where
     }
 }
 
-impl<S, B, T, F, O> Transform<S> for HttpAuthentication<T, F>
+impl<S, B, T, F, O> Transform<S, ServiceRequest> for HttpAuthentication<T, F>
 where
-    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error>
+    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>
         + 'static,
     S::Future: 'static,
     F: Fn(ServiceRequest, T) -> O + 'static,
     O: Future<Output = Result<ServiceRequest, Error>> + 'static,
     T: AuthExtractor + 'static,
 {
-    type Request = ServiceRequest;
     type Response = ServiceResponse<B>;
     type Error = Error;
     type Transform = AuthenticationMiddleware<S, F, T>;
@@ -153,25 +152,24 @@ where
     _extractor: PhantomData<T>,
 }
 
-impl<S, B, F, T, O> Service for AuthenticationMiddleware<S, F, T>
+impl<S, B, F, T, O> Service<ServiceRequest> for AuthenticationMiddleware<S, F, T>
 where
-    S: Service<Request = ServiceRequest, Response = ServiceResponse<B>, Error = Error>
+    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>
         + 'static,
     S::Future: 'static,
     F: Fn(ServiceRequest, T) -> O + 'static,
     O: Future<Output = Result<ServiceRequest, Error>> + 'static,
     T: AuthExtractor + 'static,
 {
-    type Request = ServiceRequest;
     type Response = ServiceResponse<B>;
     type Error = S::Error;
     type Future = LocalBoxFuture<'static, Result<ServiceResponse<B>, Error>>;
 
-    fn poll_ready(&mut self, ctx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
+    fn poll_ready(&self, ctx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
         self.service.borrow_mut().poll_ready(ctx)
     }
 
-    fn call(&mut self, req: Self::Request) -> Self::Future {
+    fn call(&self, req: ServiceRequest) -> Self::Future {
         let process_fn = Arc::clone(&self.process_fn);
 
         let service = Rc::clone(&self.service);
