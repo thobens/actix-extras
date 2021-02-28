@@ -76,7 +76,7 @@ impl fmt::Display for Bearer {
 impl IntoHeaderValue for Bearer {
     type Error = InvalidHeaderValue;
 
-    fn try_into(self) -> Result<HeaderValue, <Self as IntoHeaderValue>::Error> {
+    fn try_into_value(self) -> Result<HeaderValue, Self::Error> {
         let mut buffer = BytesMut::with_capacity(7 + self.token.len());
         buffer.put(&b"Bearer "[..]);
         buffer.extend_from_slice(self.token.as_bytes());
