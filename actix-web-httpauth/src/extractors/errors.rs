@@ -4,7 +4,7 @@ use std::fmt;
 use actix_web::http::StatusCode;
 use actix_web::{HttpResponse, ResponseError};
 
-use crate::headers::www_authenticate::Challenge;
+use crate::headers::www_authenticate::Challenge;https://github.com/thobens/actix-extras/tree/actix-4.0/actix-web-httpauth/src/extractors
 use crate::headers::www_authenticate::WwwAuthenticate;
 
 /// Authentication error returned by authentication extractors.
@@ -54,7 +54,7 @@ impl<C: 'static + Challenge> ResponseError for AuthenticationError<C> {
     fn error_response(&self) -> HttpResponse {
         HttpResponse::build(self.status_code)
             // TODO: Get rid of the `.clone()`
-            .set(WwwAuthenticate(self.challenge.clone()))
+            .append_header(WwwAuthenticate(self.challenge.clone()))
             .finish()
     }
 
