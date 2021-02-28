@@ -133,7 +133,7 @@ impl fmt::Display for Bearer {
 impl IntoHeaderValue for Bearer {
     type Error = InvalidHeaderValue;
 
-    fn try_into(self) -> Result<HeaderValue, <Self as IntoHeaderValue>::Error> {
+    fn try_into_value(self) -> Result<HeaderValue, Self::Error> {
         HeaderValue::from_maybe_shared(self.to_bytes())
     }
 }
