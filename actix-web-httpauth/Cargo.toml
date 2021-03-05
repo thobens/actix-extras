@@ -25,6 +25,6 @@ base64 = "0.13"
 futures-util = { version = "0.3", default-features = false }
 
 [dev-dependencies]
-actix-cors = { git = "https://github.com/thobens/actix-extras.git", branch = "actix-4.0", path = "actix-cors" }
+actix-cors = { git = "https://github.com/thobens/actix-extras.git", branch = "actix-4.0" }
 actix-rt = "2"
 actix-service = "1.0.6"
